@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../css/mains.css">
+    <style type="text/css">
+        .el-form .el-form-item .el-input{
+            width: 300px;
+
+        }
+        .el-form .el-form-item {
+            width: 380px;
+
+        }
+        #a{
+            width: 1000px;
+            height: 800px;
+            padding-top:100px;
+            margin: 0 auto;
+        }
+        #b{
+            width: 400px;
+            height: 500px;
+            float: left;
+        }
+        #c{
+            width: 400px;
+            height: 800px;
+            float: left;
+        }
+    </style>
+</head>
+<body>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- 引入组件库 注意点：引入组件库之前先引入vue.js文件 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!-- 引入异步请求-->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<!-- 引入QS转ajax-->
+<script src="https://cdn.bootcdn.net/ajax/libs/qs/6.9.4/qs.min.js"></script>
+<!--Qs.stringify()-->
+
+<div id="app">
+    <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign"
+             :rules="rules" ref="up"  >
+        <div id="a">
+            <div id="b">
+                <el-form-item label="真实姓名" prop="resumename">
+                    <el-input v-model="formLabelAlign.resumename" placeholder="请输入真实姓名"></el-input>
+                </el-form-item>
+                <el-form-item label="身份证号" prop="resumecard">
+                    <el-input v-model="formLabelAlign.resumecard" placeholder="请输入身份证号"></el-input>
+                </el-form-item>
+                <el-form-item label="性别" prop="resumesex">
+                    <el-input v-model="formLabelAlign.resumesex" placeholder="请输入性别"></el-input>
+                </el-form-item>
+                <el-form-item label="年龄" prop="resumeage">
+                    <el-input v-model="formLabelAlign.resumeage" placeholder="请输入年龄"></el-input>
+                </el-form-item>
+                <el-form-item label="户籍" prop="resumeplace">
+                    <el-input v-model="formLabelAlign.resumeplace" placeholder="请输入户籍所在地"></el-input>
+                </el-form-item>
+                <el-form-item label="学历" prop="resumeeducation">
+                    <el-input v-model="formLabelAlign.resumeeducation" placeholder="请输入最高学历"></el-input>
+                </el-form-item>
+                <el-form-item label="毕业院校" prop="resumecollege">
+                    <el-input v-model="formLabelAlign.resumecollege" placeholder="请输入毕业院校"></el-input>
+                </el-form-item>
+                <el-form-item label="所学专业" prop="resumespecialty">
+                    <el-input v-model="formLabelAlign.resumespecialty" placeholder="请输入专业名称"></el-input>
+                </el-form-item>
+                <el-form-item label="联系方式" prop="resumephone">
+                    <el-input v-model="formLabelAlign.resumephone" placeholder="请输入联系方式"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="onSubmit('up')">保存</el-button>
+                    <el-button @click="resetForm('up')">重置</el-button>
+                </el-form-item>
+
+            </div>
+            <div id="c">
+                <el-form-item label="电子邮箱" prop="resumeemail">
+                    <el-input v-model="formLabelAlign.resumeemail"></el-input>
+                </el-form-item>
+                <el-form-item label="自我评价" prop="resumeassessment">
+                    <el-input type="textarea" v-model="formLabelAlign.resumeassessment"></el-input>
+                </el-form-item>
+                <el-form-item label="专业技能" prop="resumeskill">
+                    <el-input type="textarea" v-model="formLabelAlign.resumeskill"></el-input>
+                </el-form-item>
+                <el-form-item label="项目经验" prop="resumeproject">
+                    <el-input type="textarea" v-model="formLabelAlign.resumeproject"></el-input>
+                </el-form-item>
+            </div>
+
+        </div>
+
+
+
+
+
+
+
+    </el-form>
+
+
+</div>
+
+
+<script>
+    let app=new Vue({
+        el:"#app",
+        created:function(){
+
+        },
+        data:{
+            labelPosition: 'right',
+            formLabelAlign: {
+                resumename:'',
+                resumecard:'',
+                resumesex:'',
+                resumeage:'',
+                resumeplace:'',
+                resumeeducation:'',
+                resumecollege:'',
+                resumespecialty:'',
+                resumephone:'',
+                resumeemail:'',
+                resumeassessment:'',
+                resumeskill:'',
+                resumeproject:''
+
+            },
+            rules: {
+                resumename: [
+                    { required: true, message: '请输入姓名', trigger: 'blur' },
+                    { pattern:/^[^\s]*$/, message: '不能包含空格', trigger: 'blur' }
+                ],
+                resumecard: [
+                    { required: true, message: '请输入身份证号', trigger: 'blur' },
+                    { pattern:/^[^\s]*$/, message: '不能包含空格', trigger: 'blur' }
+                ],
+                resumesex: [
+                    { required: true, message: '请输入性别', trigger: 'blur' },
+                    { pattern:/^[^\s]*$/, message: '不能包含空格', trigger: 'blur' }
+                ],
+                resumeage: [
+                    { required: true, message: '请输入年龄', trigger: 'blur' },
+                    { pattern:/^[^\s]*$/, message: '不能包含空格', trigger: 'blur' }
+                ],
+                resumeplace: [
+                    { required: true, message: '请输入户籍', trigger: 'blur' },
+                    { pattern:/^[^\s]*$/, message: '不能包含空格', trigger: 'blur' }
+                ],
+                resumeeducation: [
+                    { required: true, message: '请输入学历', trigger: 'blur' },
+                    { pattern:/^[^\s]*$/, message: '不能包含空格', trigger: 'blur' }
+                ],
+                resumecollege: [
+                    { required: true, message: '请输入毕业院校', trigger: 'blur' },
+                    { pattern:/^[^\s]*$/, message: '不能包含空格', trigger: 'blur' }
+                ],
+                resumespecialty: [
+                    { required: true, message: '请输入专业', trigger: 'blur' },
+                    { pattern:/^[^\s]*$/, message: '不能包含空格', trigger: 'blur' }
+                ],
+                resumephone: [
+                    { required: true, message: '请输入联系方式', trigger: 'blur' },
+                    { pattern:/^[^\s]*$/, message: '不能包含空格', trigger: 'blur' }
+                ],
+                resumeemail: [
+                    { required: true, message: '请输入电子邮箱', trigger: 'blur' },
+                    { pattern:/^[^\s]*$/, message: '不能包含空格', trigger: 'blur' }
+                ],
+                resumeassessment: [
+                    { required: true, message: '请输入自我评价', trigger: 'blur' },
+                    { pattern:/^[^\s]*$/, message: '不能包含空格', trigger: 'blur' }
+                ],
+                resumeskill: [
+                    { required: true, message: '请输入专业技能', trigger: 'blur' },
+                    { pattern:/^[^\s]*$/, message: '不能包含空格', trigger: 'blur' }
+                ],
+                resumeproject: [
+                    { required: true, message: '请输入项目经验', trigger: 'blur' },
+                    { pattern:/^[^\s]*$/, message: '不能包含空格', trigger: 'blur' }
+                ]
+            }
+
+        },
+        methods:{
+            onSubmit:function (up) {
+                this.$refs[up].validate((valid) => {
+                    if (valid) {
+                        let paras = {
+                            operation: 'resumeAdd',
+                            //将登录条件传过去
+                            resumename: this.formLabelAlign.resumename,
+                            resumecard: this.formLabelAlign.resumecard,
+                            resumesex: this.formLabelAlign.resumesex,
+                            resumeage: this.formLabelAlign.resumeage,
+                            resumeplace: this.formLabelAlign.resumeplace,
+                            resumeeducation: this.formLabelAlign.resumeeducation,
+                            resumecollege: this.formLabelAlign.resumecollege,
+                            resumespecialty: this.formLabelAlign.resumespecialty,
+                            resumephone: this.formLabelAlign.resumephone,
+                            resumeemail: this.formLabelAlign.resumeemail,
+                            resumeassessment: this.formLabelAlign.resumeassessment,
+                            resumeskill: this.formLabelAlign.resumeskill,
+                            resumeproject: this.formLabelAlign.resumeproject
+                        }
+
+                        axios.post('/Resume', Qs.stringify(paras))
+                            .then(function (response) {
+                                if(response.data.code==200){
+                                    window.location.href="UserResumeGo.html";
+                                    console.log("添加成功")
+                                }
+                            })
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+
+            },
+            resetForm(up) {
+                this.$refs[up].resetFields();
+            }
+
+        }
+    })
+</script>
+
+</body>
+</html>

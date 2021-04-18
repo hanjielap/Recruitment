@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../css/mains.css">
+</head>
+<body>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- 引入组件库 注意点：引入组件库之前先引入vue.js文件 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!-- 引入异步请求-->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<!-- 引入QS转ajax-->
+<script src="https://cdn.bootcdn.net/ajax/libs/qs/6.9.4/qs.min.js"></script>
+<!--Qs.stringify()-->
+
+<div id="app">
+
+    <el-table
+            :data="tableData"
+            border
+            style="width: 100%">
+        <el-table-column
+                fixed
+                prop="resumename"
+                label="姓名"
+
+        >
+        </el-table-column>
+        <el-table-column
+                prop="resumecard"
+                label="身份证号"
+
+        >
+        </el-table-column>
+        <el-table-column
+                prop="resumesex"
+                label="性别"
+
+        >
+        </el-table-column>
+
+
+        <el-table-column
+                prop="resumeage"
+                label="年龄"
+
+        >
+        </el-table-column>
+
+        <el-table-column
+                prop="resumeeducation"
+                label="学历"
+
+        >
+        </el-table-column>
+
+        <el-table-column
+                prop="resumecollege"
+                label="毕业院校"
+
+        >
+        </el-table-column>
+
+        <el-table-column
+                prop="resumephone"
+                label="电话"
+
+        >
+        </el-table-column>
+
+        <el-table-column
+                prop="resumeemail"
+                label="邮箱"
+
+        >
+        </el-table-column>
+
+        <el-table-column
+                prop="resumeassessment"
+                label="自我评价"
+
+        >
+        </el-table-column>
+
+        <el-table-column
+                prop="resumeskill"
+                label="专业技能"
+
+        >
+        </el-table-column>
+
+        <el-table-column
+                prop="resumeproject"
+                label="项目经验"
+
+        >
+        </el-table-column>
+
+
+        <el-table-column
+                fixed="right"
+                label="操作"
+                width="100">
+            <template slot-scope="scope">
+                <el-button @click="editClick(scope.row)" type="text" size="small">查看编辑</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <el-pagination
+            background
+            layout="prev, pager, next"
+            :total="total" :page-size="pageSize" @current-change="onPageCurrent">
+    </el-pagination>
+
+
+    <!--修改框体-->
+    <el-dialog title="修改" :visible.sync="dialogFormVisible">
+        <el-form :model="form">
+            <el-form-item label="简历姓名" :label-width="formLabelWidth">
+                <el-input v-model="form.resumename" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="身份证号" :label-width="formLabelWidth">
+                <el-input v-model="form.resumecard" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="简历性别" :label-width="formLabelWidth">
+                <el-input v-model="form.resumesex" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="简历年龄" :label-width="formLabelWidth">
+                <el-input v-model="form.resumeage" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="简历户籍" :label-width="formLabelWidth">
+                <el-input v-model="form.resumeplace" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="简历学历" :label-width="formLabelWidth">
+                <el-input v-model="form.resumeeducation" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="毕业院校" :label-width="formLabelWidth">
+                <el-input v-model="form.resumecollege" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="所学专业" :label-width="formLabelWidth">
+                <el-input v-model="form.resumespecialty" autocomplete="off"></el-input>
+            </el-form-item>
+
+            <el-form-item label="简历电话" :label-width="formLabelWidth">
+                <el-input v-model="form.resumephone" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="简历邮箱" :label-width="formLabelWidth">
+                <el-input v-model="form.resumeemail" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="自我评价" :label-width="formLabelWidth">
+                <el-input v-model="form.resumeassessment" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="专业技能" :label-width="formLabelWidth">
+                <el-input v-model="form.resumeskill" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="项目经验" :label-width="formLabelWidth">
+                <el-input v-model="form.resumeproject" autocomplete="off"></el-input>
+            </el-form-item>
+
+
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogFormVisible = false">取 消</el-button>
+            <el-button type="primary" @click="editfromClick">确 定</el-button>
+        </div>
+    </el-dialog>
+
+</div>
+
+
+<script>
+    let app = new Vue({
+        el: "#app",
+        created() {
+            console.log("钩子函数创建好了")
+            this.getDataFromBack()
+
+
+        },
+        data: {
+            /*表格数据*/
+            tableData: [],
+            /*总行数*/
+            total: '',
+            /*每页显示行数*/
+            pageSize: 5,
+            /*当前页*/
+            pagecurrent: 1,
+            /*查询框对应*/
+            formInline: {
+                brand: '',
+                category: ''
+            },
+            /*修改框体是否显示*/
+            dialogFormVisible: false,
+            /*修改新增框体内容*/
+            form: {}
+        },
+        methods: {
+            /*修改事件触发*/
+            editClick: function (item) {
+                console.log(item);
+                /*修改框体是否显示*/
+                this.dialogFormVisible = true;
+                /*点击事件内容赋值*/
+                this.form = item;
+            },
+            //修改窗体的数据
+            editfromClick: function (item) {
+                this.$confirm('你确定要修改嘛？, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    /*post提交*/
+                    let paras = {
+                        /*this.form.id 获取表格的数值*/
+                        operation: 'resumeUpdate',
+                        resumename: this.form.resumename,
+                        resumecard: this.form.resumecard,
+                        resumesex: this.form.resumesex,
+                        resumeage: this.form.resumeage,
+                        resumeplace: this.form.resumeplace,
+
+                        resumeeducation: this.form.resumeeducation,
+                        resumecollege: this.form.resumecollege,
+                        resumespecialty: this.form.resumespecialty,
+
+                        resumephone: this.form.resumephone,
+                        resumeemail: this.form.resumeemail,
+                        resumeassessment: this.form.resumeassessment,
+                        resumeskill: this.form.resumeskill,
+                        resumeproject: this.form.resumeproject
+
+                    }
+                    axios.post('/Resume', Qs.stringify(paras))
+                        .then(function (response) {
+                        })
+
+                    this.$message({
+                        type: 'success',
+                        message: '修改成功!'
+                    });
+                    /*隐藏*/
+                    this.dialogFormVisible = false;
+                    /*刷新页面*/
+                    this.getDataFromBack(this.pagecurrent);
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消修改'
+                    });
+                });
+            },
+
+
+            getDataFromBack() {
+                /*请求axios post方式*/
+                let paras = {
+                    operation: 'resumeSelect',
+                }
+
+                axios.post('/Resume', Qs.stringify(paras))
+                    .then(function (response) {
+                        console.log(response);
+                        //dataList显示
+                        app.tableData = response.data.dataList
+                        //条目数
+                        app.total = response.data.total;
+
+                    })
+
+
+            }
+
+        }
+    })
+</script>
+
+</body>
+</html>

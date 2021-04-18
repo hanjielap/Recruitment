@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+    <style  type="text/css">
+
+        .el-header, .el-footer {
+            background-color: #B3C0D1;
+
+            text-align: center;
+            line-height: 60px;
+        }
+
+        .el-aside {
+            background-color: #D3DCE6;
+            color: #333;
+            text-align: center;
+            line-height: 200px;
+        }
+
+        .el-main {
+            background-color: #E9EEF3;
+            color: #333;
+            /*   text-align: center;
+               line-height: 160px;*/
+        }
+
+        body > .el-container {
+            margin-bottom: 40px;
+        }
+        html,body,#app,.el-container{
+            margin: 0;
+            height: 100%;
+        }
+
+        .el-container:nth-child(5) .el-aside,
+        .el-container:nth-child(6) .el-aside {
+            line-height: 260px;
+        }
+
+        .el-container:nth-child(7) .el-aside {
+            line-height: 320px;
+        }
+        a{
+            text-decoration: none;
+            text-align: right;
+        }
+
+
+
+        body{
+            background-image: url("../../img/back.jpg");
+        }
+        .a {
+            width: 500px;
+            height: 500px;
+            margin: 0 auto;
+        }
+
+        .el-form .el-form-item .el-input{
+            width: 300px;
+        }
+         .el-header{
+            height: 300px;
+        }
+
+
+    </style>
+
+</head>
+<body>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- 引入组件库 注意点：引入组件库之前先引入vue.js文件 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!-- 引入异步请求-->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<!-- 引入QS转ajax-->
+<script src="https://cdn.bootcdn.net/ajax/libs/qs/6.9.4/qs.min.js"></script>
+<!--Qs.stringify()-->
+
+<div id="app">
+
+    <el-container>
+        <el-header>网 上 招 聘 登 录</el-header>
+
+        <el-main>
+            <div class="a">
+                <el-form :label-position="labelPosition"  :rules="rules" ref="up" label-width="80px" :model="formLabelAlign">
+                    <el-form-item label="登录名"   prop="username">
+                        <el-input v-model="formLabelAlign.username" placeholder="请输入账号"></el-input>
+                    </el-form-item>
+                    <el-form-item label="密码"   prop="userpass">
+                        <el-input type="password" v-model="formLabelAlign.userpass" placeholder="请输入密码"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="onSubmit('up')">登录</el-button>
+                        <el-button type="primary" @click="onSubmits">个人注册</el-button>
+                        <el-button type="primary" @click="onSubmitss">企业注册</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+        </el-main>
+    </el-container>
+
+
+
+
+
+</div>
+
+
+<script>
+    let app=new Vue({
+        el:"#app",
+        created:function(){
+
+        },
+        data:{
+                labelPosition: 'right',
+                formLabelAlign: {
+                    username:'',
+                    userpass:''
+
+                },
+                rules: {
+                    username: [
+                        { required: true, message: '请输入账号', trigger: 'blur' },
+                        { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
+                    ],
+                    userpass: [
+                        { required: true, message: '请输入密码', trigger: 'blur' },
+                        { pattern:/^[^\s]*$/, message: '不能包含空格', trigger: 'blur' }
+                    ]
+                }
+
+
+        },
+        methods:{
+            onSubmits:function(){
+                window.location.href="AddUser.html";
+            },
+            onSubmitss:function(){
+                window.location.href="AddEnter.html";
+            },
+            onSubmit:function (up) {
+
+                this.$refs[up].validate((valid) => {
+                    if (valid) {
+                        let paras = {
+                            operation: 'selectItem',
+                            //将登录条件传过去
+                            username: this.formLabelAlign.username,
+                            userpass: this.formLabelAlign.userpass
+                        }
+
+                        axios.post('/Login', Qs.stringify(paras))
+                            .then(function (response) {
+                                console.log(response.data.power);
+                                console.log(response.data.dataList);
+                                if (response.data.power==1 && response.data.code==200){
+                                    window.location.href = "User.html";
+                                }else if(response.data.power==2 && response.data.code==200){
+                                    window.location.href = "Enter.html";
+                                }else if(response.data.power==3 && response.data.code==200){
+                                    window.location.href = "Super.html";
+                                }else {
+                                    alert("账号密码错误");
+                                    window.location.href = "Login.html";
+                                }
+
+                            })
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+
+                
+            }
+
+        }
+    })
+</script>
+
+</body>
+</html>

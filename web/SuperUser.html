@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../css/mains.css">
+</head>
+<body>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- 引入组件库 注意点：引入组件库之前先引入vue.js文件 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!-- 引入异步请求-->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<!-- 引入QS转ajax-->
+<script src="https://cdn.bootcdn.net/ajax/libs/qs/6.9.4/qs.min.js"></script>
+<!--Qs.stringify()-->
+
+<div id="app">
+    <el-form :inline="true" :model="formInline" class="demo-form-inline">
+        <el-form-item label="用户账号">
+            <el-input v-model="formInline.username" placeholder="用户账号"></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="onSubmit">查询</el-button>
+        </el-form-item>
+    </el-form>
+
+    <el-table
+            :data="tableData"
+            border
+            style="width: 100%">
+        <el-table-column
+                fixed
+                prop="userid"
+                label="用户编号"
+        >
+        </el-table-column>
+        <el-table-column
+                prop="username"
+                label="用户账号"
+        >
+        </el-table-column>
+        <el-table-column
+                prop="userpass"
+                label="用户密码"
+        >
+        </el-table-column>
+
+
+
+
+        <el-table-column
+                fixed="right"
+                label="操作"
+                width="100">
+            <template slot-scope="scope">
+                <el-button @click="editClick(scope.row)" type="text" size="small">编辑</el-button>
+                <el-button @click="deleteClick(scope.row)" type="text" size="small">删除</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <el-pagination
+            background
+            layout="prev, pager, next"
+            :total="total" :page-size="pageSize" @current-change="onPageCurrent">
+    </el-pagination>
+
+
+    <!--修改框体-->
+    <el-dialog title="修改" :visible.sync="dialogFormVisible">
+        <el-form :model="form">
+            <el-form-item label="用户账号" :label-width="formLabelWidth">
+                <el-input v-model="form.username" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="企业用户密码" :label-width="formLabelWidth">
+                <el-input v-model="form.userpass" autocomplete="off"></el-input>
+            </el-form-item>
+
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogFormVisible = false">取 消</el-button>
+            <el-button type="primary" @click="editfromClick">确 定</el-button>
+        </div>
+    </el-dialog>
+</div>
+
+
+<script>
+    let app = new Vue({
+        el: "#app",
+        created() {
+            console.log("钩子函数创建好了")
+            this.getDataFromBack(1)
+
+
+        },
+        data: {
+            /*表格数据*/
+            tableData: [],
+            /*总行数*/
+            total: '',
+            /*每页显示行数*/
+            pageSize: 5,
+            /*当前页*/
+            pagecurrent: 1,
+            /*查询框对应*/
+            formInline: {
+                brand: '',
+                category: ''
+            },
+            /*修改框体是否显示*/
+            dialogFormVisible: false,
+            /*修改新增框体内容*/
+            form: {}
+        },
+        methods: {
+            /*修改事件触发*/
+            editClick: function (item) {
+                console.log(item);
+                /*修改框体是否显示*/
+                this.dialogFormVisible = true;
+                /*点击事件内容赋值*/
+                this.form = item;
+            },
+            //修改窗体的数据
+            editfromClick: function (item) {
+                this.$confirm('你确定要修改嘛？, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    /*post提交*/
+                    let paras = {
+                        /*this.form.id 获取表格的数值*/
+                        operation: 'updateItem',
+                        username: this.form.username,
+                        userpass: this.form.userpass,
+                        userid: this.form.userid
+                    }
+                    axios.post('/SuperUser', Qs.stringify(paras))
+                        .then(function (response) {
+                        })
+
+                    this.$message({
+                        type: 'success',
+                        message: '修改成功!'
+                    });
+                    /*隐藏*/
+                    this.dialogFormVisible = false;
+                    /*刷新页面*/
+                    this.getDataFromBack(this.pagecurrent);
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消修改'
+                    });
+                });
+            },
+
+
+            /*删除方法*/
+            deleteClick: function (item) {
+                this.$confirm('你确定要删除嘛？, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    /*post请求*/
+                    console.log(item.id);
+                    let paras = {
+                        operation: 'deleteItem',
+                        userid: item.userid
+                    }
+                    axios.post('/SuperUser', Qs.stringify(paras))
+                        .then(function (response) {
+                        })
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!',
+                    });
+                    /*将当前页码发送回去 刷新页面*/
+                    this.getDataFromBack(this.pagecurrent);
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+
+
+            },
+
+            /*查询点击事件*/
+            onSubmit: function () {
+                /*当前分页点击效果*/
+                this.getDataFromBack(1)
+
+            },
+            /*分页点击事件*/
+            onPageCurrent: function (current) {
+                /*点击分页按钮将当前页赋值过去*/
+                this.pagecurrent = current;
+                /*当前分页点击效果*/
+                this.getDataFromBack(current)
+            },
+            getDataFromBack(pageIndex) {
+                /*请求axios post方式*/
+                let paras = {
+                    operation: 'selectItem',
+                    //将当前页码发送到后端
+                    pageIndex: pageIndex,
+                    //每行显示多少条发送到后端
+                    pageSize: this.pageSize,
+                    //将查询条件传过去
+                    username: this.formInline.username
+                }
+
+                axios.post('/SuperUser', Qs.stringify(paras))
+                    .then(function (response) {
+                        console.log(response);
+                        //dataList显示
+                        app.tableData = response.data.dataList
+                        //条目数
+                        app.total = response.data.total;
+
+                    })
+
+
+            }
+
+        }
+    })
+</script>
+
+</body>
+</html>

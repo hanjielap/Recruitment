@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../css/mains.css">
+    <style type="text/css">
+        .el-form .el-form-item .el-input{
+            width: 300px;
+        }
+        .el-form .el-form-item {
+            width: 380px;
+
+        }
+        #a{
+            width: 1000px;
+            height: 800px;
+            padding-left: 400px;
+            padding-top:100px;
+            margin: 0 auto;
+        }
+
+        #b{
+            width: 400px;
+            height: 500px;
+            float: left;
+        }
+        #c{
+            width: 400px;
+            height: 800px;
+            float: left;
+        }
+    </style>
+</head>
+<body>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- 引入组件库 注意点：引入组件库之前先引入vue.js文件 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!-- 引入异步请求-->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<!-- 引入QS转ajax-->
+<script src="https://cdn.bootcdn.net/ajax/libs/qs/6.9.4/qs.min.js"></script>
+<!--Qs.stringify()-->
+
+<div id="app">
+    <div id="a">
+    <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign"  :rules="rules" ref="up"   >
+        <el-form-item label="新密码" prop="username">
+            <el-input type="password" v-model="formLabelAlign.username" placeholder="请输入新密码"></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" prop="userpass">
+            <el-input type="password" v-model="formLabelAlign.userpass" placeholder="请确认密码"></el-input>
+        </el-form-item>
+
+        <el-form-item>
+            <el-button type="primary" @click="onSubmit('up')">保存</el-button>
+            <el-button @click="resetForm('up')">重置</el-button>
+        </el-form-item>
+    </el-form>
+    </div>
+
+
+</div>
+
+
+<script>
+    let app=new Vue({
+        el:"#app",
+        created:function(){
+
+        },
+        data:{
+            labelPosition: 'right',
+            formLabelAlign: {
+                userpass:''
+            },
+            rules: {
+                username: [
+                    { required: true, message: '请输入密码', trigger: 'blur' },
+                    { pattern:/^[^\s]*$/, message: '不能包含空格', trigger: 'blur' }
+                ],
+                userpass: [
+                    { required: true, message: '请输入确认密码', trigger: 'blur' },
+                    { pattern:/^[^\s]*$/, message: '不能包含空格', trigger: 'blur' }
+                ]
+            }
+
+        },
+        methods:{
+            onSubmit:function (up) {
+                this.$refs[up].validate((valid) => {
+                    if (valid) {
+                        let paras = {
+                            operation: 'updeteUser',
+                            //将登录条件传过去
+                            userpass: this.formLabelAlign.userpass
+                        }
+
+                        axios.post('/Login', Qs.stringify(paras))
+
+                            .then(function (response) {
+                                console.log(response.data.code)
+                                if (response.data.code==200){
+                                    window.location.href="UserResumeAdd.html";
+                                    console.log("修改成功")
+                                }
+
+
+
+                            })
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+
+            },
+            resetForm(up) {
+                this.$refs[up].resetFields();
+            }
+
+        }
+    })
+</script>
+
+</body>
+</html>

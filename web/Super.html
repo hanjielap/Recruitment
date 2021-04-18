@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../css/mains.css">
+    <style type="text/css">
+
+        #a1{
+            padding-left: 1500px;
+            display: inline-block;
+        }
+
+
+    </style>
+</head>
+<body>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- 引入组件库 注意点：引入组件库之前先引入vue.js文件 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!-- 引入异步请求-->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<!-- 引入QS转ajax-->
+<script src="https://cdn.bootcdn.net/ajax/libs/qs/6.9.4/qs.min.js"></script>
+<!--Qs.stringify()-->
+
+<div id="app">
+    <el-container>
+        <el-header><div >基于中小型企业网上招聘管理系统
+            <div id="a1">
+                <el-dropdown>
+                    <el-button>
+                        <i class="el-icon-user-solid"></i>
+                        账号
+                        <i class="el-icon-arrow-down"></i>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-link href="Login.html" target="_blank">
+                            <el-dropdown-item>退出</el-dropdown-item>
+                        </el-link>
+
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </div></div>
+
+
+
+        </el-header>
+        <el-container>
+            <el-aside width="200px">
+                <el-menu
+                        default-active="2"
+                        class="el-menu-vertical-demo"
+                        @open="handleOpen"
+                        @close="handleClose"
+                        background-color="#545c64"
+                        text-color="#fff"
+                        active-text-color="#ffd04b">
+                    <el-menu-item index="0" >
+
+                        <span slot="title">主页</span>
+                    </el-menu-item>
+
+                    <!--导航栏展示-->
+                    <div v-for="item in menuItems">
+                        <!--菜单项遍历-->
+                        <!--:index 要动态变化-->
+                        <el-submenu :index="item.index">
+                            <template slot="title">
+                                <i class="el-icon-location"></i>
+                                <span>{{item.menuName}}</span>
+                            </template>
+                            <!--菜单项内容遍历-->
+                            <div v-for="child in item.children">
+
+                                <!--href也要数组获取  target显示-->
+                                <a :href="child.url" target="mainFrame">
+                                    <el-menu-item :index="child.index">{{child.name}}</el-menu-item>
+                                </a>
+
+
+                            </div>
+
+                        </el-submenu>
+                    </div>
+                </el-menu>
+
+            </el-aside>
+
+            <el-main>
+
+                <!--scrolling="no" 下拉框不显示实 yes no -->
+                <iframe src="" frameborder="0" name="mainFrame"  height="95%" width="100%"></iframe>
+
+
+            </el-main>
+        </el-container>
+    </el-container>
+
+</div>
+
+
+<script>
+    let app=new Vue({
+        el:"#app",
+        created:function(){
+
+        },
+        data: {
+            visible: false,
+            menuItems: [
+                {
+                    index: '1', menuName: '企业管理', children: [{index: '1-1', name: '企业信息', url: 'SuperEnter.html'}]
+                },
+                {
+                    index: '2', menuName: '个人管理', children: [{index: '2-1', name: '个人信息', url: 'SuperUser.html'},{index: '2-2', name: '简历信息', url: 'SuperResume.html'}]
+                },
+                {
+                    index: '3', menuName: '公告管理', children: [{index: '3-1', name: '公告信息', url: 'SuperNew.html'}]
+                }
+                ]
+
+        },
+        methods:{
+
+        }
+    })
+</script>
+
+</body>
+</html>

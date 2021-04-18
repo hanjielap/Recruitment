@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../css/mains.css">
+</head>
+<body>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- 引入组件库 注意点：引入组件库之前先引入vue.js文件 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!-- 引入异步请求-->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<!-- 引入QS转ajax-->
+<script src="https://cdn.bootcdn.net/ajax/libs/qs/6.9.4/qs.min.js"></script>
+<!--Qs.stringify()-->
+
+<div id="app">
+    <el-form :inline="true" :model="formInline" class="demo-form-inline">
+        <el-form-item label="企业名称">
+            <el-input v-model="formInline.enterprisename" placeholder="企业名称"></el-input>
+        </el-form-item>
+        <el-form-item label="职位名称">
+            <el-input v-model="formInline.jobname" placeholder="职位名称"></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="onSubmit">查询</el-button>
+        </el-form-item>
+    </el-form>
+
+    <el-table
+            :data="tableData"
+            border
+            style="width: 100%">
+        <el-table-column
+                fixed
+                prop="enterprisename"
+                label="企业名称"
+        >
+        </el-table-column>
+        <el-table-column
+                prop="enterpriseinte"
+                label="企业经营介绍"
+        >
+        </el-table-column>
+
+        <el-table-column
+                prop="enterprisephone"
+                label="企业联系方式"
+        >
+        </el-table-column>
+
+        <el-table-column
+                prop="jobtitle"
+                label="招聘标题"
+        >
+        </el-table-column>
+
+
+        <el-table-column
+                prop="jobname"
+                label="招聘职位"
+        >
+        </el-table-column>
+
+        <el-table-column
+                prop="jobinfo"
+                label="职位介绍"
+        >
+        </el-table-column>
+    </el-table>
+
+        <el-pagination
+                background
+                layout="prev, pager, next"
+                :total="total" :page-size="pageSize" @current-change="onPageCurrent">
+        </el-pagination>
+</div>
+
+
+<script>
+    let app = new Vue({
+        el: "#app",
+        created() {
+            console.log("钩子函数创建好了")
+            this.getDataFromBack(1)
+
+
+        },
+        data: {
+            /*表格数据*/
+            tableData: [],
+            /*总行数*/
+            total: '',
+            /*每页显示行数*/
+            pageSize: 5,
+            /*当前页*/
+            pagecurrent: 1,
+            /*查询框对应*/
+            formInline: {
+                brand: '',
+                category: ''
+            },
+            /*修改框体是否显示*/
+            dialogFormVisible: false,
+            /*修改新增框体内容*/
+            form: {}
+        },
+        methods: {
+
+            /*查询点击事件*/
+            onSubmit: function () {
+                /*当前分页点击效果*/
+                this.getDataFromBack(1)
+
+            },
+            /*分页点击事件*/
+            onPageCurrent: function (current) {
+                /*点击分页按钮将当前页赋值过去*/
+                this.pagecurrent = current;
+                /*当前分页点击效果*/
+                this.getDataFromBack(current)
+            },
+            getDataFromBack(pageIndex) {
+                /*请求axios post方式*/
+                let paras = {
+                    operation: 'selectItem2',
+                    //将当前页码发送到后端
+                    pageIndex: pageIndex,
+                    //每行显示多少条发送到后端
+                    pageSize: this.pageSize,
+                    //将查询条件传过去
+                    enterprisename: this.formInline.enterprisename,
+                    jobname: this.formInline.jobname
+                }
+
+                axios.post('/Resume', Qs.stringify(paras))
+                    .then(function (response) {
+                        console.log(response);
+                        //dataList显示
+                        app.tableData = response.data.dataList
+                        //条目数
+                        app.total = response.data.total;
+
+                    })
+
+
+            }
+
+        }
+    })
+</script>
+
+</body>
+</html>
